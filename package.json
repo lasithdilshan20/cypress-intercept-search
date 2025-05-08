@@ -1,0 +1,40 @@
+{
+  "name": "cypress-intercept-search",
+  "version": "0.1.0",
+  "description": "A Cypress plugin to recursively search your intercepted requests/responses by key/value",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "cypress",
+    "cypress-plugin",
+    "intercept",
+    "search",
+    "testing",
+    "assertion"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "peerDependencies": {
+    "cypress": "^10.0.0 || ^11.0.0 || ^12.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0",
+    "@types/cypress": "^12.0.0"
+  },
+  "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cypress-intercept-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/cypress-intercept-search/issues"
+  },
+  "homepage": "https://github.com/yourusername/cypress-intercept-search#readme"
+}
