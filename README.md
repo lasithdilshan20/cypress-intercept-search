@@ -12,6 +12,14 @@ A Cypress plugin that adds a custom command to search and assert values in inter
 npm install --save-dev cypress-intercept-search
 ```
 
+If you encounter peer dependency issues with Cypress versions, you can use the `--legacy-peer-deps` flag to bypass these checks:
+
+```bash
+npm install --save-dev cypress-intercept-search --legacy-peer-deps
+```
+
+This is useful when you're using a newer version of Cypress that isn't explicitly listed in the plugin's peer dependencies, but you know it should work fine.
+
 ## Setup
 
 Add the plugin to your Cypress configuration:
