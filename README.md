@@ -2,6 +2,10 @@
 
 A Cypress plugin that adds a custom command to search and assert values in intercepted requests and responses.
 
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue.svg)](https://github.com/lasithdilshan20/cypress-intercept-search)
+[![Author](https://img.shields.io/badge/Author-Lasith%20Dilshan-orange.svg)](https://github.com/lasithdilshan20)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Installation
 
 ```bash
@@ -107,65 +111,91 @@ A Cypress chainable containing an array of search results. Each result object co
 
 ## Examples
 
-### Example 1: Verifying Player IDs
+### Example 1: Searching in Nested API Response
 
 ```javascript
-cy.intercept('POST', '/api/savePlay').as('savePlay');
-cy.get('#save-button').click();
-cy.wait('@savePlay')
-  .search('playerID', '00000000-0000-0000-0000-000000000000')
+// Set up the intercept
+cy.intercept('GET', '/api/nested').as('getNested');
+
+// Visit the page and trigger the request
+cy.visit('/');
+cy.get('#btn-nested').click();
+
+// Wait for the request and search for the name property
+cy.wait('@getNested')
+  .search('name', 'Alice')
   .should('exist')
   .then((results) => {
-    expect(results[0].location).to.equal('request');
+    // Verify the search results contain the expected data
+    expect(results[0].location).to.equal('response.body');
+    expect(results[0].value).to.equal('Alice');
   });
 ```
 
-### Example 2: Checking Multiple Values
+### Example 2: Searching in Echo API Response
 
 ```javascript
-cy.intercept('GET', '/api/players').as('getPlayers');
-cy.visit('/players');
-cy.wait('@getPlayers')
-  .search('nameRef')
-  .should('have.length.at.least', 1)
-  .then((results) => {
-    // Check that at least one player has the expected name format
-    const nameRefs = results.map(result => result.value);
-    expect(nameRefs).to.include('Doe, CyJon');
-  });
-```
+// Set up the intercept
+cy.intercept('GET', '/api/echo*').as('getEcho');
 
-### Example 3: Searching in Nested Objects
+// Visit the page and trigger the request
+cy.visit('/');
+cy.get('#btn-echo').click();
 
-```javascript
-cy.intercept('POST', '/api/savePlay').as('savePlay');
-cy.get('#save-button').click();
-cy.wait('@savePlay').then((interception) => {
-  // Traditional way (verbose)
-  const { players } = interception.request.body;
-  expect(players).to.exist;
-  expect(players).to.be.an('object');
-
-  Object.entries(players).forEach(([role, player]) => {
-    expect(player, `${role} should not be null`).to.not.be.null;
-    expect(player.id, `${role}.id should not be default GUID`)
-      .to.not.equal('00000000-0000-0000-0000-000000000000');
-  });
-});
-
-// Using the plugin (more concise)
-cy.wait('@savePlay')
-  .search('players')
+// Wait for the request and search for the foo property
+cy.wait('@getEcho')
+  .search('foo', 'hello')
   .should('exist')
   .then((results) => {
-    const players = results[0].value;
-    Object.entries(players).forEach(([role, player]) => {
-      expect(player, `${role} should not be null`).to.not.be.null;
-      expect(player.id, `${role}.id should not be default GUID`)
-        .to.not.equal('00000000-0000-0000-0000-000000000000');
-    });
+    // There should be multiple matches for 'foo' in different locations
+    expect(results.length).to.be.greaterThan(1);
   });
 ```
+
+### Example 3: Searching in Submit API Request and Response
+
+```javascript
+// Set up the intercept
+cy.intercept('POST', '/api/submit').as('postSubmit');
+
+// Visit the page and trigger the request
+cy.visit('/');
+cy.get('#btn-submit').click();
+
+// Wait for the request and search for the gamma property
+cy.wait('@postSubmit')
+  .search('gamma')
+  .should('exist')
+  .then((results) => {
+    expect(results[0].value).to.equal('G');
+  });
+```
+
+## Running the Examples
+
+This project includes a test server and example tests to demonstrate the plugin's functionality.
+
+### Starting the Test Server
+
+```bash
+npm run start
+```
+
+### Running the Tests
+
+```bash
+# Open Cypress Test Runner
+npm run cypress:open
+
+# Run tests headlessly
+npm run cypress:run
+```
+
+The example tests demonstrate searching for values in different parts of HTTP requests and responses:
+
+1. Searching for a property in a nested API response
+2. Searching for query parameters in request and response
+3. Searching for properties in request body and response body
 
 ## License
 

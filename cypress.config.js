@@ -8,7 +8,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       return interceptSearchPlugin(on, config);
     },
-    baseUrl: 'https://example.cypress.io',
+    baseUrl: 'http://localhost:3000',
     supportFile: 'cypress/support/e2e.js',
   },
 });

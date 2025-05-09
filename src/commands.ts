@@ -1,4 +1,3 @@
-// Define the Interception interface locally
 export interface Interception {
   request: {
     body?: any;
@@ -40,28 +39,40 @@ function collectMatches(
   path: string[] = [],
   matches: SearchResult[] = [],
   intercept?: Interception,
-  location?: SearchResult['location']
+  location?: SearchResult['location'],
+  visited: Set<any> = new Set()
 ): SearchResult[] {
-  if (obj && typeof obj === 'object') {
-    for (const key of Object.keys(obj)) {
-      const currentPath = [...path, key];
-      const val = obj[key];
+  if (obj === null || obj === undefined || typeof obj !== 'object') {
+    return matches;
+  }
 
-      if (
-        key === keyToFind &&
-        (valueToMatch === undefined || val === valueToMatch)
-      ) {
-        matches.push({
-          intercept: intercept!, // presence guaranteed by caller
-          location: location!,   // presence guaranteed by caller
-          path: currentPath,
-          value: val,
-        });
-      }
+  if (visited.has(obj)) {
+    return matches;
+  }
 
-      collectMatches(val, keyToFind, valueToMatch, currentPath, matches, intercept, location);
+  visited.add(obj);
+
+  for (const key of Object.keys(obj)) {
+    const currentPath = [...path, key];
+    const val = obj[key];
+
+    if (
+      key === keyToFind &&
+      (valueToMatch === undefined || val === valueToMatch)
+    ) {
+      matches.push({
+        intercept: intercept!,
+        location: location!,
+        path: currentPath,
+        value: val,
+      });
+    }
+
+    if (val !== null && typeof val === 'object' && !visited.has(val)) {
+      collectMatches(val, keyToFind, valueToMatch, currentPath, matches, intercept, location, visited);
     }
   }
+
   return matches;
 }
 
@@ -77,15 +88,15 @@ function searchIntercepts(
   const results: SearchResult[] = [];
 
   list.forEach((i) => {
-    // Request side
-    collectMatches(i.request.body, key, value, [], results, i, 'request.body');
-    collectMatches(i.request.query, key, value, [], results, i, 'request.query');
-    collectMatches(i.request.headers, key, value, [], results, i, 'request.headers');
+    const visited = new Set<any>();
 
-    // Response side
+    collectMatches(i.request.body, key, value, [], results, i, 'request.body', visited);
+    collectMatches(i.request.query, key, value, [], results, i, 'request.query', visited);
+    collectMatches(i.request.headers, key, value, [], results, i, 'request.headers', visited);
+
     if (i.response) {
-      collectMatches(i.response.body, key, value, [], results, i, 'response.body');
-      collectMatches(i.response.headers, key, value, [], results, i, 'response.headers');
+      collectMatches(i.response.body, key, value, [], results, i, 'response.body', visited);
+      collectMatches(i.response.headers, key, value, [], results, i, 'response.headers', visited);
     }
   });
 
@@ -105,7 +116,6 @@ declare global {
   }
 }
 
-// This function will be called in the browser context where Cypress is available
 export function registerSearchCommand() {
   // @ts-ignore - Cypress is available in the browser context
   Cypress.Commands.add(
@@ -122,7 +132,6 @@ export function registerSearchCommand() {
       const matchText = matchCount === 1 ? 'match' : 'matches';
       const message = `search ${key}${valueStr}`;
 
-      // Create a log entry that will be displayed in the test runner
       // @ts-ignore - Cypress is available in the browser context
       Cypress.log({
         name: 'search',
@@ -137,18 +146,13 @@ export function registerSearchCommand() {
       });
 
       // @ts-ignore - cy is available in the browser context
-      // Add a custom message to the subject for better assertion messages
       const wrappedMatches = cy.wrap(matches, { log: false });
 
-      // Override the default toString method to provide a better message in assertions
-      // This message will appear in green when the assertion passes
       // @ts-ignore - Adding custom property for better assertion messages
       wrappedMatches.toString = function() {
         if (matches.length === 0) {
           return `${message} (no matches found)`;
         }
-
-        // Create a detailed description of each match
         const matchDetails = matches.map((match, idx) => {
           const locationInfo = `${match.location} at ${match.path.join('.')}`;
           const valueStr = typeof match.value === 'object' ? JSON.stringify(match.value) : match.value;
@@ -163,7 +167,6 @@ export function registerSearchCommand() {
         return `${message} (found ${matchCount} ${matchText}):\n${matchDetails.join('\n')}`;
       };
 
-      // Also override the inspect method which is used by Cypress for assertions
       // @ts-ignore - Adding custom property for better assertion messages
       wrappedMatches.inspect = wrappedMatches.toString;
 

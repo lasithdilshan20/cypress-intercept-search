@@ -24,19 +24,19 @@ declare namespace Cypress {
 interface SearchResult {
   /** The index of the interception in the array (useful when searching in multiple interceptions) */
   index: number;
-  
-  /** Either 'request' or 'response', indicating where the match was found */
-  location: 'request' | 'response';
-  
+
+  /** Which part of the HTTP transaction was searched */
+  location: 'request.body' | 'request.query' | 'request.headers' | 'response.body' | 'response.headers';
+
   /** The matched key */
   key: string;
-  
+
   /** The value associated with the key */
   value: any;
-  
+
   /** An array representing the path to the matched key */
   path: string[];
-  
+
   /** A string representation of the full path to the matched key */
   fullPath: string;
 }
