@@ -8,7 +8,7 @@ declare module 'express' {
   }
   export interface Response {
     setHeader(name: string, value: string): void;
-    status(code: number): Response;
+    status(code: number): any; // Changed from Response to any to avoid private type error
     json(body: any): void;
     sendFile(path: string): void;
   }

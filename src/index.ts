@@ -17,4 +17,6 @@ if (typeof window !== 'undefined' && (window as any).Cypress) {
 }
 
 // Export the plugin for use in cypress.config.js
-export default interceptSearchPlugin;
+// Using module.exports for CommonJS compatibility
+// This will allow users to require the plugin without .default
+export = interceptSearchPlugin;

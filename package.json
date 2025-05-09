@@ -1,6 +1,6 @@
 {
   "name": "cypress-intercept-search",
-  "version": "0.1.0",
+  "version": "1.0.2",
   "description": "A Cypress plugin to recursively search your intercepted requests/responses by key/value",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,7 +29,7 @@
     "express": "^4.18.2"
   },
   "peerDependencies": {
-    "cypress": "^10.0.0 || ^11.0.0 || ^12.0.0"
+    "cypress": "^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0"
   },
   "devDependencies": {
     "typescript": "^4.0.0",

@@ -1,7 +1,6 @@
 const { defineConfig } = require('cypress');
-// When using TypeScript with default export, we need to access the .default property
-// when requiring the module in CommonJS
-const interceptSearchPlugin = require('./dist/index').default;
+// Import the plugin directly without .default
+const interceptSearchPlugin = require('./dist/index');
 
 module.exports = defineConfig({
   e2e: {
