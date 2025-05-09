@@ -39,6 +39,42 @@ module.exports = defineConfig({
 });
 ```
 
+### For TypeScript Users (cypress.config.ts)
+
+```typescript
+// cypress.config.ts
+import { defineConfig } from 'cypress'
+import interceptSearchPlugin from 'cypress-intercept-search'
+
+export default defineConfig({
+  e2e: {
+    // any other e2e options you need, e.g. baseUrl, specPattern, etc.
+    setupNodeEvents(on, config) {
+      // hook in our plugin
+      return interceptSearchPlugin(on, config)
+    },
+  },
+})
+```
+
+### Using with Other Plugins
+
+If you're using multiple plugins, you can integrate them like this:
+
+```javascript
+// In your cypress.config.js or cypress.config.ts
+{
+  e2e: {
+    setupNodeEvents(on, config) {
+      mochawesomeReporter(on);
+      registerRabbitMqTasks(on);
+      interceptSearchPlugin(on, config);
+      return config;
+    },
+  }
+}
+```
+
 ### For Cypress < 10 (cypress/plugins/index.js)
 
 ```javascript
@@ -55,6 +91,13 @@ In your support file (e.g., cypress/support/e2e.js or cypress/support/commands.j
 
 ```javascript
 import 'cypress-intercept-search';
+```
+
+For TypeScript users (e.g., cypress/support/e2e.ts):
+
+```typescript
+import { registerSearchCommand } from 'cypress-intercept-search/dist/commands';
+registerSearchCommand();
 ```
 
 ## Usage
