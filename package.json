@@ -1,6 +1,6 @@
 {
   "name": "cypress-intercept-search",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Cypress plugin to recursively search your intercepted requests/responses by key/value",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

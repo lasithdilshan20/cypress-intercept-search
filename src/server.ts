@@ -8,7 +8,7 @@ declare module 'express' {
   }
   export interface Response {
     setHeader(name: string, value: string): void;
-    status(code: number): any; // Changed from Response to any to avoid private type error
+    status(code: number): any;
     json(body: any): void;
     sendFile(path: string): void;
   }
@@ -29,8 +29,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 // 1) GET /api/echo?foo=bar
-//    - Returns nested JSON, sets a custom header
-//    - Query param in request.query
 app.get('/api/echo', (req: Request, res: Response) => {
   const { foo = 'none' } = req.query;
   res.setHeader('X-Echo-Header', `YouSent:${foo}`);
@@ -42,8 +40,6 @@ app.get('/api/echo', (req: Request, res: Response) => {
 });
 
 // 2) POST /api/submit
-//    - Reads JSON body, payload
-//    - Returns 201, sets Content-Length header and echo payload
 app.post('/api/submit', (req: Request, res: Response) => {
   const payload = req.body;
   const str = JSON.stringify(payload);
@@ -52,7 +48,6 @@ app.post('/api/submit', (req: Request, res: Response) => {
 });
 
 // 3) GET /api/nested
-//    - Returns deeply nested array + object to test deep search
 app.get('/api/nested', (_req: Request, res: Response) => {
   const data = {
     users: [
@@ -66,8 +61,6 @@ app.get('/api/nested', (_req: Request, res: Response) => {
 });
 
 // 4) PUT /api/update/:id
-//    - Reads URL param and JSON body
-//    - Echos both in response header and body
 app.put('/api/update/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const update = req.body;
